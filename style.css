@@ -1,0 +1,457 @@
+/* CSS Variables for consistent color palette */
+:root {
+    --primary-light: #87cefa; /* Sky Blue */
+    --primary-dark: #42a5f5;  /* Deeper Sky Blue */
+    --accent-light: #f0f4c3;  /* Very Light Yellow */
+    --accent-dark: #d4e157;   /* Light Yellow-Green */
+    --text-color-dark: #333;       /* Dark Grey for Text */
+    --text-color-light: #4a5568; /* Tailwind's text-gray-700 */
+    --text-color-medium: #6b7280; /* Tailwind's text-gray-600 */
+    --bg-light: #f8f8f8;      /* Light Grey Background */
+    --bg-body: #f3f4f6; /* Tailwind's bg-gray-100 */
+    --bg-card: #ffffff; /* Tailwind's bg-white */
+    --border-color: #d1d5db; /* Tailwind's border-gray-300 */
+    --ring-color: #3b82f6; /* Tailwind's ring-blue-500 */
+    --blue-700: #1d4ed8; /* Specific blue for headings */
+    --blue-600: #2563eb; /* Specific blue for checkboxes */
+    --blue-200: #bfdbfe; /* Specific blue for selected tags background */
+    --blue-800: #1e40af; /* Specific blue for selected tags text */
+    --red-600: #dc2626; /* Specific red for security notes */
+    --gray-50: #f9fafb; /* Specific gray for selected brands background */
+    --white: #ffffff;
+    --black: #000000;
+}
+
+/* Base styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-body); /* Equivalent to bg-gray-100 */
+    color: var(--text-color-dark); /* Equivalent to text-gray-800 */
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Global box-sizing for consistent padding/border handling */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Container for centralizing content */
+.container {
+    max-width: 960px; /* max-w-4xl (approx.) or custom width */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem; /* p-4 */
+}
+
+/* Responsive padding for container */
+@media (min-width: 768px) { /* md:p-8 */
+    .container {
+        padding: 2rem;
+    }
+}
+
+/* Heading styles */
+h1, h2 {
+    font-family: 'Poppins', sans-serif;
+    color: var(--primary-dark);
+    margin-top: 0;
+    margin-bottom: 0.5rem; /* Equivalent to mb-2 for h1 */
+}
+
+h1 {
+    font-size: 2.25rem; /* text-4xl */
+    line-height: 2.5rem; /* leading-10 */
+    font-weight: 800; /* font-extrabold */
+    color: var(--blue-700); /* text-blue-700 */
+    margin-bottom: 0.5rem; /* mb-2 */
+}
+
+@media (min-width: 768px) { /* md:text-5xl */
+    h1 {
+        font-size: 3rem;
+        line-height: 1;
+    }
+}
+
+h2 {
+    font-size: 1.5rem; /* text-2xl */
+    line-height: 2rem; /* leading-8 */
+    font-weight: 600; /* font-semibold */
+    color: var(--text-color-dark); /* text-gray-800 */
+    margin-bottom: 1rem; /* mb-4 */
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+p.text-xl { /* for subheading */
+    font-size: 1.25rem; /* text-xl */
+    line-height: 1.75rem; /* leading-7 */
+    color: var(--text-color-medium); /* text-gray-600 */
+}
+
+p.text-sm { /* for notes */
+    font-size: 0.875rem; /* text-sm */
+    line-height: 1.25rem; /* leading-5 */
+    color: #6b7280; /* text-gray-500 */
+}
+
+/* Form styling */
+form {
+    background-color: var(--bg-card); /* bg-white */
+    padding: 1.5rem; /* p-6 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-xl */
+}
+
+/* Styles for individual form steps */
+.form-step {
+    display: none; /* Hidden by default */
+}
+
+.form-step.active {
+    display: block; /* Shown when active */
+}
+
+.form-step > div { /* For the main section divs inside each step */
+    margin-bottom: 1.5rem; /* mb-6 */
+    background-color: var(--bg-card); /* bg-white */
+    padding: 1.5rem; /* p-6 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+    margin-bottom: 1.5rem; /* Space between sections within a step */
+}
+
+
+/* Form labels */
+label {
+    display: block;
+    color: var(--text-color-light); /* text-gray-700 */
+    font-weight: 500; /* font-medium */
+    margin-bottom: 0.5rem; /* mb-2 */
+}
+
+/* Form inputs (text, email, tel, date, number, textarea) */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    border: 1px solid var(--border-color); /* border border-gray-300 */
+    border-radius: 0.5rem; /* rounded-lg */
+    outline: none; /* focus:outline-none */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+    border-color: var(--ring-color); /* focus:ring-2 focus:ring-blue-500 */
+    box-shadow: 0 0 0 2px var(--ring-color);
+}
+
+textarea {
+    resize: vertical; /* Allow vertical resizing */
+}
+
+/* Grid layout for form fields */
+.grid {
+    display: grid;
+}
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.gap-4 {
+    gap: 1rem; /* gap-4 */
+}
+.mb-4 {
+    margin-bottom: 1rem; /* mb-4 */
+}
+
+/* Responsive grid columns */
+@media (min-width: 768px) { /* md:grid-cols-2 */
+    .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (min-width: 640px) { /* sm:grid-cols-2 */
+    .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (min-width: 1024px) { /* lg:grid-cols-3, lg:grid-cols-4 */
+    .lg\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* Flexbox for radio buttons and selected brands */
+.flex {
+    display: flex;
+}
+.items-center {
+    align-items: center;
+}
+.mr-4 {
+    margin-right: 1rem; /* mr-4 */
+}
+.flex-wrap {
+    flex-wrap: wrap;
+}
+.gap-2 {
+    gap: 0.5rem; /* gap-2 */
+}
+
+/* Checkbox and Radio button custom styles */
+.form-checkbox, .form-radio {
+    accent-color: var(--blue-600); /* Uses primary-dark or a similar blue for consistency */
+    width: 1.25rem; /* h-5 w-5 */
+    height: 1.25rem; /* h-5 w-5 */
+    margin-right: 0.5rem; /* ml-2 equivalent if directly after a label */
+}
+.inline-flex {
+    display: inline-flex;
+    align-items: center;
+}
+.ml-2 {
+    margin-left: 0.5rem; /* ml-2 */
+}
+
+/* Button primary */
+.btn-primary {
+    background-color: var(--primary-dark);
+    color: var(--white);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* transition duration-300 ease-in-out transform */
+    width: 100%; /* w-full */
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 600; /* font-semibold */
+    border: none;
+    cursor: pointer;
+    text-align: center; /* Ensure text is centered for anchors */
+    display: block; /* Ensure button takes full width */
+    text-decoration: none; /* Remove underline for anchor buttons */
+    margin-top: 1rem; /* Space above buttons */
+}
+
+.btn-primary:hover {
+    background-color: #3f90e0; /* Slightly darker blue on hover */
+    transform: scale(1.02); /* Slightly less aggressive scale than 1.05 */
+}
+
+/* Secondary button for previous step */
+.btn-secondary {
+    background-color: var(--bg-light); /* Lighter background for secondary */
+    color: var(--text-color-dark);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+    margin-top: 1rem; /* Add some space above */
+}
+
+.btn-secondary:hover {
+    background-color: #e0e0e0; /* Darker light background on hover */
+    transform: scale(1.02); /* Slightly less aggressive scale than 1.05 */
+}
+
+
+/* Link styles */
+a {
+    color: var(--blue-600); /* text-blue-600 */
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* Car Company Search and Dropdown */
+.relative {
+    position: relative;
+}
+#carCompanyDropdown {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    background-color: var(--bg-card); /* bg-white */
+    border: 1px solid var(--border-color); /* border border-gray-300 */
+    border-radius: 0.5rem; /* rounded-lg */
+    margin-top: 0.25rem; /* mt-1 */
+    max-height: 12rem; /* max-h-48 */
+    overflow-y: auto;
+    list-style: none; /* remove bullet points */
+    padding: 0;
+    margin-left: 0; /* reset default ul margin */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+}
+#carCompanyDropdown.hidden {
+    display: none;
+}
+#carCompanyDropdown li {
+    padding: 0.5rem; /* p-2 */
+    cursor: pointer;
+}
+#carCompanyDropdown li:hover {
+    background-color: #e0f2fe; /* hover:bg-blue-100 */
+}
+
+/* Selected Car Brands Container */
+#selectedCarBrands {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem; /* gap-2 */
+    padding: 0.5rem; /* p-2 */
+    border: 1px solid var(--border-color); /* border border-gray-300 */
+    border-radius: 0.5rem; /* rounded-lg */
+    background-color: var(--gray-50); /* bg-gray-50 */
+    min-height: 2.5rem; /* min-h-[40px] */
+    align-items: center; /* for vertical centering */
+}
+
+#selectedCarBrands .selected-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--blue-200); /* bg-blue-200 */
+    color: var(--blue-800); /* text-blue-800 */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    padding: 0.125rem 0.625rem; /* px-2.5 py-0.5 */
+    border-radius: 9999px; /* rounded-full */
+    white-space: nowrap; /* prevent wrapping */
+}
+
+#selectedCarBrands .selected-tag .remove-tag-btn {
+    margin-left: 0.25rem; /* ml-1 */
+    color: var(--blue-800); /* text-blue-800 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem; /* Adjust icon size if necessary */
+    line-height: 1; /* Ensure icon is aligned */
+}
+#selectedCarBrands .selected-tag .remove-tag-btn:hover {
+    color: #1c3682; /* hover:text-blue-900 */
+}
+#selectedCarBrands .selected-tag .remove-tag-btn:focus {
+    outline: none; /* focus:outline-none */
+}
+
+/* Specific note styling */
+p.text-red-600 {
+    color: var(--red-600); /* text-red-600 */
+}
+
+/* Header text alignment */
+.text-center {
+    text-align: center;
+}
+
+/* Margin bottom for header and form sections */
+.mb-8 {
+    margin-bottom: 2rem;
+}
+.mt-1 {
+    margin-top: 0.25rem;
+}
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+.mb-6 {
+    margin-bottom: 1.5rem;
+}
+
+/* Progress Bar Styles */
+.progress-container {
+    width: 100%;
+    background-color: var(--border-color); /* Light grey background */
+    border-radius: 0.5rem; /* Rounded corners */
+    overflow: hidden; /* Ensures the bar stays within bounds */
+    margin-bottom: 1rem; /* Space below the progress bar */
+    height: 1.5rem; /* Height of the progress bar */
+    position: relative; /* For positioning the text */
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%; /* Initial width */
+    background-color: var(--primary-dark); /* Blue progress */
+    border-radius: 0.5rem; /* Rounded corners */
+    transition: width 0.4s ease-in-out; /* Smooth transition for width changes */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-color-dark); /* Text color over the bar */
+    font-weight: 600;
+    font-size: 0.875rem; /* text-sm */
+    z-index: 1; /* Ensure text is above the bar */
+}
+
+/* Custom Message Box Styles */
+.message-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of everything */
+}
+
+.message-box-content {
+    background-color: var(--bg-card);
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.message-box-content p {
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color-dark);
+}
+
+.message-box-content .btn-primary {
+    width: auto; /* Override w-full for the button inside the message box */
+    padding: 0.75rem 2rem;
+    display: inline-block; /* Make it inline-block for better centering */
+}
+
+/* Utility classes for hiding elements */
+.hidden {
+    display: none !important;
+}
