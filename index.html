@@ -1,4 +1,4 @@
-``<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1355,10 +1355,10 @@
 
         // --- ELEMENTS ---
         const carBrandSelect = document.getElementById('carBrand');
-        const otherCarBrandInput = document.getElementById('otherCarBrandInput'); // Get the new input for other brand
+        const otherCarBrandInput = document.getElementById('otherCarBrandInput');
         const carModelSelect = document.getElementById('carModel');
-        const otherCarModelInput = document.getElementById('otherCarModelInput'); // Get the new input for other model
-        const fuelTypeSelect = document.getElementById('fuelType'); // Get the fuel type select
+        const otherCarModelInput = document.getElementById('otherCarModelInput');
+        const fuelTypeSelect = document.getElementById('fuelType');
         const yearSelect = document.getElementById('manufacturingYear');
         const locationInput = document.getElementById('location');
         const locationError = document.getElementById('locationError');
@@ -1366,77 +1366,61 @@
         const phoneError = document.getElementById('phoneError');
         const form = document.getElementById('carServiceForm');
         const responseMessage = document.getElementById('responseMessage');
-        const nameInput = document.getElementById('fullName'); // Added for validation
-        const getLocationBtn = document.getElementById('getLocationBtn'); // Get the new button
-        const locationInstruction = document.getElementById('locationInstruction'); // Get the instruction text element
-        const termsCheckbox = document.getElementById('terms'); // Get the terms checkbox
+        const nameInput = document.getElementById('fullName');
+        const getLocationBtn = document.getElementById('getLocationBtn');
+        const locationInstruction = document.getElementById('locationInstruction');
+        const termsCheckbox = document.getElementById('terms');
 
 
         // --- FUNCTIONS ---
         function populateCarModels() {
             const brand = carBrandSelect.value;
             carModelSelect.innerHTML = '<option value="">Select Car Model</option>';
-            // Add the "Other" option to the model select regardless of brand
+            // Always add the "Other" option to the model select
             const otherModelOption = document.createElement('option');
             otherModelOption.value = 'Other';
             otherModelOption.textContent = 'Other';
             carModelSelect.appendChild(otherModelOption);
 
-            carModelSelect.disabled = true;
-            otherCarBrandInput.style.display = 'none'; // Hide other brand input by default
-            otherCarBrandInput.required = false; // Make it not required by default
-            otherCarModelInput.style.display = 'none'; // Hide other model input by default
-            otherCarModelInput.required = false; // Make it not required by default
-            carModelSelect.style.display = 'block'; // Show car model select by default
+            // Reset visibility and required state for "Other" inputs
+            otherCarBrandInput.style.display = 'none';
+            otherCarBrandInput.required = false;
+            otherCarModelInput.style.display = 'none';
+            otherCarModelInput.required = false;
 
-            // Reset fuel type when brand changes
+            // Reset fuel type
             resetFuelType();
 
-
             if (brand === 'Other') {
-                otherCarBrandInput.style.display = 'block'; // Show other brand input
-                otherCarBrandInput.required = true; // Make it required
-                carModelSelect.style.display = 'none'; // Hide car model select
-                otherCarModelInput.style.display = 'block'; // Show other model input
-                otherCarModelInput.required = true; // Make it required
+                otherCarBrandInput.style.display = 'block';
+                otherCarBrandInput.required = true;
+                carModelSelect.style.display = 'none'; // Hide the model select if brand is "Other"
+                otherCarModelInput.style.display = 'block'; // Show "Other" model input
+                otherCarModelInput.required = true;
                 fuelTypeSelect.disabled = false; // Enable fuel type for manual selection
+                carModelSelect.disabled = true; // Disable the car model select
             } else if (brand && carModels[brand]) {
                 const brandData = carModels[brand];
                 for (const category in brandData) {
                     if (brandData.hasOwnProperty(category) && Array.isArray(brandData[category])) {
                         const optgroup = document.createElement('optgroup');
                         optgroup.label = category;
-                        brandData[category].forEach(modelData => { // Iterate over objects
+                        brandData[category].forEach(modelData => {
                             const option = document.createElement('option');
-                            option.value = modelData.model; // Use model name as value
-                            option.textContent = modelData.model; // Use model name as text
+                            option.value = modelData.model;
+                            option.textContent = modelData.model;
                             optgroup.appendChild(option);
                         });
                         carModelSelect.appendChild(optgroup);
                     }
                 }
-                carModelSelect.disabled = false;
-                fuelTypeSelect.disabled = true; // Disable fuel type until model is selected
-            } else if (brand) {
-                carModelSelect.innerHTML = '<option value="">No models listed</option>';
-                 // Add the "Other" option back if no models listed
-                const otherModelOptionFallback = document.createElement('option');
-                otherModelOptionFallback.value = 'Other';
-                otherModelOptionFallback.textContent = 'Other';
-                carModelSelect.appendChild(otherModelOptionFallback);
-
-                carModelSelect.disabled = false; // Enable to select "Other"
-                fuelTypeSelect.disabled = true; // Disable fuel type
+                carModelSelect.disabled = false; // Enable model select for specific brands
+                carModelSelect.style.display = 'block'; // Ensure model select is visible
             } else {
-                 // If no brand selected, only show the default and "Other" options
-                 carModelSelect.innerHTML = '<option value="">Select Car Brand First</option>';
-                 const otherModelOptionInitial = document.createElement('option');
-                 otherModelOptionInitial.value = 'Other';
-                 otherModelOptionInitial.textContent = 'Other';
-                 carModelSelect.appendChild(otherModelOptionInitial);
-
-                 carModelSelect.disabled = true; // Keep disabled until brand is selected
-                 fuelTypeSelect.disabled = true; // Disable fuel type
+                // If no brand selected (initial state)
+                carModelSelect.innerHTML = '<option value="">Select Car Brand First</option><option value="Other">Other</option>';
+                carModelSelect.disabled = true;
+                carModelSelect.style.display = 'block'; // Ensure model select is visible
             }
         }
 
@@ -1446,50 +1430,59 @@
 
             resetFuelType(); // Reset fuel type before updating
 
-            if (brand === 'Other' || model === 'Other') {
-                 // If either brand or model is "Other", enable fuel type for manual selection
-                 fuelTypeSelect.disabled = false;
+            // Handle "Other" cases for brand or model
+            if (brand === 'Other') {
+                // If brand is "Other", model input is also "Other", enable fuel type
+                fuelTypeSelect.disabled = false;
+                otherCarModelInput.style.display = 'block';
+                otherCarModelInput.required = true;
+                carModelSelect.style.display = 'none';
+                return; // Exit early as "Other" brand implies manual fuel selection
             }
-            else if (brand && model && carModels[brand]) {
+
+            // Handle specific brand, but "Other" model
+            if (brand && model === 'Other') {
+                fuelTypeSelect.disabled = false;
+                otherCarModelInput.style.display = 'block';
+                otherCarModelInput.required = true;
+                carModelSelect.style.display = 'none';
+                return; // Exit early as "Other" model implies manual fuel selection
+            }
+
+            // For specific brand and specific model
+            if (brand && model && carModels[brand]) {
                 const brandData = carModels[brand];
                 let foundModel = null;
-                // Find the selected model data
                 for (const category in brandData) {
                     if (brandData.hasOwnProperty(category) && Array.isArray(brandData[category])) {
                         foundModel = brandData[category].find(m => m.model === model);
-                        if (foundModel) break; // Stop searching once found
+                        if (foundModel) break;
                     }
                 }
 
                 if (foundModel && foundModel.fuel && foundModel.fuel.length > 0) {
+                    // Populate fuel options (optional, as options are static)
+                    // If multiple fuel types, enable select for user choice
+                    fuelTypeSelect.disabled = false;
+                    // Pre-select if only one option exists
                     if (foundModel.fuel.length === 1) {
-                        // Automatically select the fuel type if only one option
                         fuelTypeSelect.value = foundModel.fuel[0];
-                        fuelTypeSelect.disabled = true; // Disable if automatically selected
-                    } else {
-                        // If multiple fuel types, enable select for user choice
-                        fuelTypeSelect.disabled = false;
-                        // Optional: Select the first fuel type as a default hint
-                        // fuelTypeSelect.value = foundModel.fuel[0];
+                        fuelTypeSelect.disabled = true; // Keep disabled if auto-selected
                     }
                 } else {
-                    // If model not found or no fuel data, enable for manual entry
+                    // Model found but no specific fuel data, allow manual selection
                     fuelTypeSelect.disabled = false;
                 }
             } else {
-                // If no brand or model selected, disable fuel type
+                // No specific brand or model selected yet, disable fuel type
                 fuelTypeSelect.disabled = true;
             }
 
-            // Toggle visibility of otherCarModelInput based on model selection
-            if (model === 'Other' && brand !== 'Other') { // Only show if a specific brand is selected AND model is "Other"
-                 otherCarModelInput.style.display = 'block';
-                 otherCarModelInput.required = true;
-                 carModelSelect.style.display = 'none'; // Hide the select when manual input is needed
-            } else {
-                 otherCarModelInput.style.display = 'none';
-                 otherCarModelInput.required = false;
-                 carModelSelect.style.display = 'block'; // Show the select otherwise
+            // Ensure car model select is visible if not "Other" model
+            if (model !== 'Other' && brand !== 'Other') {
+                carModelSelect.style.display = 'block';
+                otherCarModelInput.style.display = 'none';
+                otherCarModelInput.required = false;
             }
         }
 
@@ -1511,53 +1504,46 @@
         }
 
         function getUserLocation() {
-            // Disable button while fetching
             getLocationBtn.disabled = true;
             getLocationBtn.textContent = "Fetching...";
-            locationInput.readOnly = true; // Keep readonly initially
+            locationInput.readOnly = true;
             locationInput.placeholder = "Fetching location...";
-            locationError.style.display = 'none'; // Hide error initially
-            locationInput.style.backgroundColor = '#f8f9fa'; // Set readonly background
-            locationInstruction.textContent = "Fetching your location..."; // Update instruction text
+            locationError.style.display = 'none';
+            locationInput.style.backgroundColor = '#f8f9fa';
+            locationInstruction.textContent = "Fetching your location...";
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
-                        // Display coordinates
                         locationInput.value = `Lat: ${latitude.toFixed(6)}, Lon: ${longitude.toFixed(6)}`;
-                        locationInput.readOnly = true; // Keep readonly
-                        locationInput.style.backgroundColor = '#e9ecef'; // Style to look disabled but filled
-                        locationError.style.display = 'none'; // Hide error on success
-                        locationInstruction.textContent = "Thank You For Giving Your Location"; // Change instruction text
-                        // Change instruction text color back to default or green on success
-                        locationInstruction.style.color = '#28a745'; // Success color
+                        locationInput.readOnly = true;
+                        locationInput.style.backgroundColor = '#e9ecef';
+                        locationError.style.display = 'none';
+                        locationInstruction.textContent = "Thank You For Giving Your Location";
+                        locationInstruction.style.color = '#28a745';
 
-
-                        // Re-enable button after success (optional, as it's filled)
                         getLocationBtn.disabled = false;
                         getLocationBtn.textContent = "Get Location";
                     },
                     (error) => {
                         console.error("Geolocation Error:", error);
-                        locationInput.value = ""; // Clear value
+                        locationInput.value = "";
                         locationInput.placeholder = "Location permission denied or failed. Enter manually.";
                         locationInput.readOnly = false; // Allow manual input
                         locationInput.style.backgroundColor = ''; // Reset background
                         locationError.textContent = "Could not get location. Please enable permissions or enter manually.";
                         locationError.style.display = 'block';
-                        locationInstruction.textContent = "Please click on \"Get Location\" button so we can get your correct location."; // Reset instruction text
-                        locationInstruction.style.color = '#dc3545'; // Keep instruction text red on failure
+                        locationInstruction.textContent = "Please click on \"Get Location\" button so we can get your correct location.";
+                        locationInstruction.style.color = '#dc3545';
 
-
-                        // Re-enable button after failure
                         getLocationBtn.disabled = false;
                         getLocationBtn.textContent = "Get Location";
                     },
                     {
                         timeout: 10000,
-                        enableHighAccuracy: true // Request more accurate location
+                        enableHighAccuracy: true
                     }
                 );
             } else {
@@ -1565,23 +1551,20 @@
                 locationInput.value = "";
                 locationInput.placeholder = "Geolocation not supported. Enter manually.";
                 locationInput.readOnly = false; // Allow manual input
-                locationInput.style.backgroundColor = ''; // Reset background
+                locationInput.style.backgroundColor = '';
                 locationError.textContent = "Geolocation is not supported by your browser. Please enter manually.";
                 locationError.style.display = 'block';
-                locationInstruction.textContent = "Please click on \"Get Location\" button so we can get your correct location."; // Reset instruction text
-                locationInstruction.style.color = '#dc3545'; // Keep instruction text red on failure
+                locationInstruction.textContent = "Please click on \"Get Location\" button so we can get your correct location.";
+                locationInstruction.style.color = '#dc3545';
 
-
-                // Disable button since it won't work
                 getLocationBtn.disabled = true;
                 getLocationBtn.textContent = "Not Supported";
             }
         }
 
         function validatePhoneNumber() {
-            // Check if the input is not empty and matches the pattern
             if (phoneInput.value.length === 0) {
-                phoneError.style.display = 'none'; // Hide error if empty (required attribute handles empty)
+                phoneError.style.display = 'none';
                 return true;
             }
             if (phoneInput.validity.patternMismatch || phoneInput.value.length !== 10) {
@@ -1596,47 +1579,57 @@
 
         // --- EVENT LISTENERS ---
         carBrandSelect.addEventListener('change', populateCarModels);
-        carModelSelect.addEventListener('change', updateFuelType); // Add event listener for car model change
+        carModelSelect.addEventListener('change', updateFuelType);
         phoneInput.addEventListener('input', validatePhoneNumber);
-        phoneInput.addEventListener('blur', validatePhoneNumber); // Validate on blur too
+        phoneInput.addEventListener('blur', validatePhoneNumber);
 
-        // Add event listener for the new "Get Location" button
         getLocationBtn.addEventListener('click', getUserLocation);
 
 
-        // Client-side validation before submitting to Formspree
-        form.addEventListener('submit', (e) => {
+        // Client-side validation and Formspree submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
             let isValid = true;
             responseMessage.textContent = ""; // Clear previous messages
             responseMessage.style.color = '#dc3545'; // Default message color to error
 
+            // Clear all error messages initially before re-validation
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+
+
             // Validate Name
             if (!nameInput.value.trim()) {
                 isValid = false;
-                if (!responseMessage.textContent) { // Only show the first encountered error
+                if (!responseMessage.textContent) {
                     responseMessage.textContent = "Full Name is required.";
                     nameInput.focus();
                 }
             }
 
             // Validate Phone Number
-            if (!phoneInput.value.trim()) { // Check if phone is empty
+            if (!phoneInput.value.trim()) {
                 isValid = false;
                 if (!responseMessage.textContent) {
                     responseMessage.textContent = "Phone Number is required.";
                     phoneInput.focus();
                 }
-            } else if (!validatePhoneNumber()) { // Check format if not empty
+                phoneError.style.display = 'block'; // Show error for empty phone
+                phoneError.textContent = "Phone Number is required.";
+            } else if (!validatePhoneNumber()) {
                 isValid = false;
                 if (!responseMessage.textContent) {
                     responseMessage.textContent = "Please fix the phone number error.";
                     phoneInput.focus();
                 }
+                // validatePhoneNumber() already shows the error message
             }
 
-            // Validate Car Brand and Model (Handle "Other" case)
+            // Validate Car Brand and Model
             const selectedBrand = carBrandSelect.value;
             const selectedModel = carModelSelect.value;
+            const otherBrandValue = otherCarBrandInput.value.trim();
+            const otherModelValue = otherCarModelInput.value.trim();
 
             if (!selectedBrand) {
                 isValid = false;
@@ -1645,14 +1638,14 @@
                     carBrandSelect.focus();
                 }
             } else if (selectedBrand === 'Other') {
-                if (!otherCarBrandInput.value.trim()) {
+                if (!otherBrandValue) {
                     isValid = false;
                     if (!responseMessage.textContent) {
                         responseMessage.textContent = "Please enter the Car Brand name.";
                         otherCarBrandInput.focus();
                     }
                 }
-                if (!otherCarModelInput.value.trim()) { // Validate the manual model input when brand is "Other"
+                if (!otherModelValue) {
                     isValid = false;
                     if (!responseMessage.textContent) {
                         responseMessage.textContent = "Please enter the Car Model name.";
@@ -1660,26 +1653,25 @@
                     }
                 }
             } else { // A specific brand is selected
-                 if (selectedModel === 'Other') { // Specific brand selected, but model is "Other"
-                     if (!otherCarModelInput.value.trim()) { // Validate the manual model input
-                         isValid = false;
-                         if (!responseMessage.textContent) {
-                             responseMessage.textContent = "Please enter the Car Model name.";
-                             otherCarModelInput.focus();
-                         }
-                     }
-                 } else if (!selectedModel) { // Specific brand selected, but no model selected (and not "Other")
-                     isValid = false;
-                     if (!responseMessage.textContent) {
-                         responseMessage.textContent = "Please select a Car Model.";
-                         carModelSelect.focus();
-                     }
-                 }
+                if (selectedModel === 'Other') {
+                    if (!otherModelValue) {
+                        isValid = false;
+                        if (!responseMessage.textContent) {
+                            responseMessage.textContent = "Please enter the Car Model name.";
+                            otherCarModelInput.focus();
+                        }
+                    }
+                } else if (!selectedModel) {
+                    isValid = false;
+                    if (!responseMessage.textContent) {
+                        responseMessage.textContent = "Please select a Car Model.";
+                        carModelSelect.focus();
+                    }
+                }
             }
 
-
             // Validate Fuel Type
-            if (!fuelTypeSelect.value) { // Validate the fuel type select
+            if (!fuelTypeSelect.value) {
                 isValid = false;
                 if (!responseMessage.textContent) {
                     responseMessage.textContent = "Please select a Fuel Type.";
@@ -1696,83 +1688,69 @@
                 }
             }
 
-            // Validate Location (This section ensures location is mandatory)
+            // Validate Location
             const currentLocationValue = locationInput.value.trim();
-            const locationFetchFailed = locationInput.readOnly && locationInput.placeholder.includes("permission denied or failed");
-            const geolocationNotSupported = locationInput.readOnly && locationInput.placeholder.includes("Geolocation not supported");
+            // Check if it looks like a valid coordinate, or if it was manually entered
+            const isLocationManuallyEntered = locationInput.readOnly === false && currentLocationValue !== "" && !currentLocationValue.startsWith("Lat:");
 
-
-            if (currentLocationValue === "" || locationFetchFailed || geolocationNotSupported) {
+            if (currentLocationValue === "" || locationError.style.display === 'block') { // Check if input is empty OR if the "fetch failed" error is already visible
                 isValid = false;
                 if (!responseMessage.textContent) {
-                    if (geolocationNotSupported) {
-                        responseMessage.textContent = "Location is required. Geolocation is not supported, please enter manually.";
-                    } else if (locationFetchFailed) {
+                    if (locationInput.placeholder.includes("Geolocation not supported")) {
+                        responseMessage.textContent = "Location is required. Geolocation not supported, please enter manually.";
+                    } else if (locationInput.placeholder.includes("permission denied or failed")) {
                         responseMessage.textContent = "Location is required. Please allow access or enter manually.";
-                    } else { // Value is just empty
+                    } else {
                         responseMessage.textContent = "Location is required. Please get location or enter manually.";
                     }
-                    // locationInput.focus(); // Focus might not work consistently depending on readonly state
                 }
-                // Update location error message
-                if (geolocationNotSupported) {
-                    locationError.textContent = "Geolocation not supported. Please enter manually.";
-                } else if (locationFetchFailed) {
-                    locationError.textContent = "Location permission denied or failed. Please enter manually.";
-                } else { // Value is just empty
-                    locationError.textContent = "Location is required. Please get location or enter manually.";
+                locationError.style.display = 'block'; // Ensure location error is visible
+                // Update error text if it's just empty and not a permission issue
+                if (currentLocationValue === "" && !locationInput.placeholder.includes("permission denied or failed") && !locationInput.placeholder.includes("Geolocation not supported")) {
+                     locationError.textContent = "Location is required. Please get location or enter manually.";
                 }
-                locationError.style.display = 'block';
-
             } else {
-                locationError.style.display = 'none'; // Hide error if location is valid (either fetched or manually entered)
+                locationError.style.display = 'none'; // Hide error if location is valid
             }
+
 
             // Validate Terms and Conditions Checkbox
             if (!termsCheckbox.checked) {
                 isValid = false;
                 if (!responseMessage.textContent) {
                     responseMessage.textContent = "You must agree to the Terms and Conditions.";
-                    // You could add a visual indicator to the checkbox or label here if needed
                 }
             }
 
 
             if (!isValid) {
-                e.preventDefault(); // STOP submission if any validation failed
+                return; // Stop submission if validation failed
             } else {
-                // If all client-side checks pass, allow the form to submit to Formspree
-                responseMessage.textContent = "Submitting..."; // Indicate submission
-                responseMessage.style.color = '#007bff'; // Submission color (using primary blue)
-                // Use Formspree's built-in AJAX handling for a smoother experience
-                e.preventDefault(); // Prevent default form submission for AJAX example
+                responseMessage.textContent = "Submitting...";
+                responseMessage.style.color = '#007bff';
+
                 const formData = new FormData(form);
 
-                // Append manual brand/model if "Other" is selected for either brand or model
-                const finalCarBrand = carBrandSelect.value === 'Other' ? otherCarBrandInput.value.trim() : carBrandSelect.value;
-                const finalCarModel = carModelSelect.value === 'Other' || carBrandSelect.value === 'Other' ? otherCarModelInput.value.trim() : carModelSelect.value;
+                // Set the final brand and model values for submission
+                const finalCarBrand = selectedBrand === 'Other' ? otherBrandValue : selectedBrand;
+                const finalCarModel = selectedModel === 'Other' || selectedBrand === 'Other' ? otherModelValue : selectedModel;
 
                 formData.set('carBrand', finalCarBrand);
                 formData.set('carModel', finalCarModel);
-
-
-                // Ensure the selected fuel type is included
-                formData.set('fuelType', fuelTypeSelect.value);
-
-                // Include the terms acceptance in the form data
                 formData.set('termsAccepted', termsCheckbox.checked ? 'Yes' : 'No');
 
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
 
-                fetch(form.action, {
-                    method: form.method,
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                }).then(response => {
                     if (response.ok) {
                         responseMessage.textContent = 'Thank you for your booking! We will contact you shortly.';
-                        responseMessage.style.color = '#28a745'; // Success color
+                        responseMessage.style.color = '#28a745';
                         form.reset(); // Reset the form on successful submission
 
                         // --- Show Browser Notification ---
@@ -1787,43 +1765,44 @@
                         }
                         // ---------------------------------
 
+                        // Manually reset elements not covered by form.reset() or populated by initial calls
+                        locationInput.value = "";
+                        locationInput.placeholder = "Location not set";
+                        locationInput.readOnly = true;
+                        locationInput.style.backgroundColor = '#f8f9fa';
+                        getLocationBtn.disabled = false;
+                        getLocationBtn.textContent = "Get Location";
+                        locationInstruction.textContent = "Please click on \"Get Location\" button so we can get your correct location.";
+                        locationInstruction.style.color = '#dc3545';
 
-                        // Manually trigger actions that reset doesn't handle fully:
-                        // Do NOT call getUserLocation here, as it would immediately try to fetch again.
-                        // Instead, reset the UI state manually.
-                        locationInput.value = ""; // Clear location input
-                        locationInput.placeholder = "Location not set"; // Reset placeholder
-                        locationInput.readOnly = true; // Make it readonly again
-                        locationInput.style.backgroundColor = '#f8f9fa'; // Reset readonly background
-                        getLocationBtn.disabled = false; // Re-enable the button
-                        getLocationBtn.textContent = "Get Location"; // Reset button text
-                        locationInstruction.textContent = "Please click on \"Get Location\" button so we can get your correct location."; // Reset instruction text
-                        locationInstruction.style.color = '#dc3545'; // Reset instruction text color to red
+                        phoneError.style.display = 'none';
+                        locationError.style.display = 'none';
 
-                        // Also reset the car brand/model inputs visibility and fuel type
-                        populateCarModels(); // This will reset the dropdown and hide the 'Other' inputs and reset fuel type
+                        otherCarBrandInput.style.display = 'none';
+                        otherCarBrandInput.required = false;
+                        otherCarBrandInput.value = ''; // Clear value
+                        otherCarModelInput.style.display = 'none';
+                        otherCarModelInput.required = false;
+                        otherCarModelInput.value = ''; // Clear value
 
-                        // Uncheck the terms checkbox on reset
-                        termsCheckbox.checked = false;
-
-
-                        phoneError.style.display = 'none'; // Hide phone error after reset
-                        locationError.style.display = 'none'; // Hide location error after reset
+                        // Re-initialize dropdowns after reset
+                        populateCarModels();
+                        resetFuelType();
 
                     } else {
-                        response.json().then(data => {
-                            if (Object.hasOwn(data, 'errors')) {
-                                responseMessage.textContent = data["errors"].map(error => error["message"]).join(", ");
-                            } else {
-                                responseMessage.textContent = 'Oops! There was a problem submitting your form.';
-                            }
-                            responseMessage.style.color = '#dc3545'; // Error color
-                        })
+                        const data = await response.json();
+                        if (Object.hasOwn(data, 'errors')) {
+                            responseMessage.textContent = data["errors"].map(error => error["message"]).join(", ");
+                        } else {
+                            responseMessage.textContent = 'Oops! There was a problem submitting your form.';
+                        }
+                        responseMessage.style.color = '#dc3545';
                     }
-                }).catch(error => {
+                } catch (error) {
                     responseMessage.textContent = 'Oops! There was a network problem. Please try again.';
-                    responseMessage.style.color = '#dc3545'; // Error color
-                });
+                    responseMessage.style.color = '#dc3545';
+                    console.error('Fetch error:', error);
+                }
             }
         });
 
@@ -1831,21 +1810,18 @@
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             populateYears();
-            // Do NOT call getUserLocation here on page load.
-            // The user needs to explicitly click the button as per the new instruction.
-            // Initialize the location input state to "Location not set" and readonly.
+            // Initialize the location input state
             locationInput.value = "";
             locationInput.placeholder = "Location not set";
             locationInput.readOnly = true;
-            locationInput.style.backgroundColor = '#f8f9fa'; // Set readonly background
-            getLocationBtn.disabled = false; // Ensure button is enabled initially
-            getLocationBtn.textContent = "Get Location"; // Set initial button text
-            locationInstruction.textContent = "Please click on \"Get Location\" button so we can get your correct location."; // Set initial instruction text
-            locationInstruction.style.color = '#dc3545'; // Set initial instruction text color to red
-
+            locationInput.style.backgroundColor = '#f8f9fa';
+            getLocationBtn.disabled = false;
+            getLocationBtn.textContent = "Get Location";
+            locationInstruction.textContent = "Please click on \"Get Location\" button so we can get your correct location.";
+            locationInstruction.style.color = '#dc3545';
 
             // Initialize car brand/model display and fuel type
-            populateCarModels(); // Call this to set up the initial state (dropdown visible, 'Other' inputs hidden)
+            populateCarModels();
             resetFuelType(); // Ensure fuel type is disabled initially
         });
     </script>
